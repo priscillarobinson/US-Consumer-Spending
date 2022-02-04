@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang ="en">
+<head>
+    <meta charset="UTF-8">
+    <title>US Consumer Discretionary Spending 1997 - 2019</title>
+    
+    <!-- Leaflet CSS-->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+    crossorigin=""/>
+
+    <!-- Our CSS -->
+    <link rel="stylesheet" type="text/css" href="static/css/style.css">
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+    <!--Plotly-->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!--D3-->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!--AM Charts | Chart Race JS-->
+    <script src="https://www.amcharts.com/lib/4/core.js"></script>
+    <script src="https://www.amcharts.com/lib/4/charts.js"></script>
+    <script src="https://www.amcharts.com/lib/4/themes/animated.js"></script>
+
+    <script>
+    $(document).ready(function () {
+        $('div.hidden').fadeIn(1000).removeClass('hidden').css("display","");
+    });
+
+    $(window).on("load",function() {
+  function fade(pageLoad) {
+  	var windowBottom = $(window).scrollTop() + $(window).innerHeight();
+    var min = 0.3;
+    var max = 1;
+    var threshold = 0.01;
+    
+    $(".fade").each(function() {
+      /* Check the location of each desired element */
+      var objectBottom = $(this).offset().top + $(this).outerHeight();
+      
+      /* If the element is completely within bounds of the window, fade it in */
+      if (objectBottom < windowBottom) { //object comes into view (scrolling down)
+        if ($(this).css("opacity")<=min+threshold || pageLoad) {$(this).fadeTo(100,max);}
+      } else { //object goes out of view (scrolling up)
+        if ($(this).css("opacity")>=max-threshold || pageLoad) {$(this).fadeTo(100,min);}
+      }
+    });
+  } fade(true); //fade elements on page-load
+  $(window).scroll(function(){fade(false);}); //fade elements on scroll
+});
+    </script>
+
+<!----HEADER---->
+<div class="container-fluid main">
+    <div class="row-fluid">
+    <div class="col-lg-10 col-md-12">
+    <header class="header">
+        <img class="header-icon" src="static/resources/DNAsset 1_100.svg"/>
+        <div class="hidden">
+            <h1 class="title ">US Consumer Discretionary Spending 1997 - 2019</h1>
+            <h3 class="title">Northwestern Data Science & Visualization Bootcamp | Project 2</h3>
+        </div>
+    </header>
+    </div>
+    
+    <div class="col-lg-2 col-md-12">
+        <div class="btn-group hidden">
+            <a href="https://github.com/michael-sorensen/Project-2"><button><img class="button-icon" src="static/resources/git-icon.svg"/><div class="button-text">
+                    Github</div></button></a>
+            <a href="https://www.kaggle.com/davidbroberts/us-personal-expenditures-by-state-19972019"><button><img class="button-icon" src="static/resources/data-icon.svg"/><div class="button-text">Data</div></button></a>  
+        </div>
+    </div>
+</div>
+</div>
+</head>
+<!----/HEADER---->
+
+<!----BODY---->
+<body>
+<div class="container-fluid main">
+<!----SIDEBAR---->
+<div class="container-fluid">
+<div class="row-fluid">
+<div class="col-lg-3"> 
+    <div class="card-sidebar">
+        <div class="card-body hidden">
+            <div class="card-header">OVERVIEW</div>
+            <p class="summary">This dashboard uses data from BEA (Bureau of Economic Analysis) Personal Consumption Expenditures dataset, and contains 25 categories of spending data by US region, State and County for the years 1997-2019. The visualizations presented in this dashboard were created using leaflet.js and plotly.js. The original dataset and the github respository are posted in the header.</p>
+        </div>
+    </div>
+    
+    <div class="row-fluid">
+
+    <div class="card fade">
+        <div class="card-body">
+            <h2 class="data">Services</h2>
+            <hr class="blue">
+            <p class="data-summary"> Includes housing and utilities, health care, transportation, recreation
+                services, food services and accommodations, financial services and insurance, etc.</p>
+        </div>
+    </div>
+
+    <div class="card fade">
+        <h2 class="data">Non-Durable Goods</h2>
+        <hr class="blue">
+        <p class="data-summary"> Includes  food and beverages purchased for off-premises consumption,
+            clothing and footwear, gasoline and other energy goods, etc.</p>
+    </div>
+
+    <div class="card fade">
+        <div class="card-body">
+            <h2 class="data">Durable Goods</h2>
+            <hr class="blue">
+            <p class="data-summary"> Includes motor vehicles and parts, furnishings and durable household
+                equipment, recreational goods and vehicles, etc.</p>
+        </div>
+    </div>
+
+    <div class="card fade">
+        <div class="card-body">
+            <h2 class="data">Non-Profit</h2>
+            <hr class="blue">
+            <p class="data-summary"> Includes health & outpatient services, hospitals & nursing homes, participant sports centers, performing arts, museums and libraries, other recreation service, etc.</p>
+        </div>
+    </div>
+    </div>
+</div>
+</div>
+<!----/SIDEBAR---->
+
+<!----BODY CONTENT---->
+<div class="col-lg-9">
+    <div class="row borders-map">
+        <div class="card-header">2019 Personal Consumption Expenditures</div>
+    <div id="map" style="border-radius: 10px;"></div>
+</div>
+<div class="row borders">
+    <div class="card-header-center">Consumption Expenditures by Category over Year</div>
+        <div id="chartdiv"></div>
+</div>
+
+<div class="row borders fade">
+    <div class="card-header-center">Consumption Expenditures by State
+        <select id="selDataset"></select></div>
+        <div id="plot"></div>
+        <div class="lg-container">
+        <ul class="legend">
+            <li><span class="services"></span> Services</li>
+            <li><span class="ndg"></span>Non-Durable Goods</li>
+            <li><span class="dg"></span>Durable Goods</li>
+            <li style="margin-right:0px !important;"><span class="nonprofit"></span>Non-Profits</li>
+        </ul>
+    </div>
+
+
+</div>
+<div class="row borders fade">
+    <div class="card-header-center">Consumption Expenditures by State<select id="selDataset2"></select></div>
+        <div id="plot2"></div>
+        <div class="lg-container">
+            <ul class="legend">
+                <li><span class="services"></span> Services</li>
+                <li><span class="ndg"></span>Non-Durable Goods</li>
+                <li><span class="dg"></span>Durable Goods</li>
+                <li style="margin-right:0px !important;"><span class="nonprofit"></span>Non-Profits</li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+
+
+
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+    crossorigin=""></script>
+
+
+<!-- polyfill.io is library for using newer JavaScript features in older browers (such as Object.assign) -->
+<script src="https://cdn.polyfill.io/v2/polyfill.min.js"></script>
+
+<!-- Our JS-->
+<script type="text/javascript" src="static/js/config.js"></script>
+<script type="text/javascript" src="static/js/plots.js"></script>
+<script type="text/javascript" src="static/js/plot.js"></script>
+<script type="text/javascript" src="static/js/race.js"></script>
+<script type="text/javascript" src="static/js/choropleth.js"></script>
+
+</body>
+<div class="container-fluid main">
+<footer class="footer">
+    Eugene Kikuchi, Priscilla Robinson, Schaefer Shaughnessy, Michael Sorensen
+</footer></div>
+
+
+</html> 
